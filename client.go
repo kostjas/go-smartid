@@ -9,6 +9,7 @@ import (
 	"io"
 	"net/http"
 	"strconv"
+	"time"
 )
 
 const pollDown = 1000
@@ -24,28 +25,30 @@ type Client struct {
 	// Poll defines poll timeout value in milliseconds. The upper bound of
 	// timeout is 120000, the minimum is 1000. If not specified by the client,
 	// a value halfway between maximum and minimum is used.
-	Poll uint32
+	Poll time.Duration
 
 	httpClient *http.Client
 }
 
-// Option interface used for setting optional Client properties.
+// Option to be passed to NewClient
 type Option interface {
 	apply(*Client)
 }
 
 type optionFunc func(*Client)
 
-func (o optionFunc) apply(c *Client) { o(c) }
+func (f optionFunc) apply(c *Client) {
+	f(c)
+}
 
-// WithHTTPClient specifies which http client to use.
+// WithHTTPClient returns an Option that sets the http.Client for a smartid.Client
 func WithHTTPClient(httpClient *http.Client) Option {
 	return optionFunc(func(c *Client) { c.httpClient = httpClient })
 }
 
 // NewClient creates a new client instance. Poll will be in range 1000ms to
 // 120000ms.
-func NewClient(url string, poll uint32, opts ...Option) *Client {
+func NewClient(url string, poll time.Duration, opts ...Option) *Client {
 	client := &Client{
 		APIUrl: url,
 		Poll:   poll,

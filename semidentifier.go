@@ -2,53 +2,32 @@ package smartid
 
 import "fmt"
 
-// Supported countries by Smart-ID.
+// IdentifierType for semantic identifier.
+type IdentifierType string
+
+// Available identifier types.
 const (
-	CountryEE = "EE" // Estonia
-	CountryLV = "LV" // Latvia
-	CountryLT = "LT" // Lithuania
-	CountryKZ = "KZ" // Kazakhstan
+	IdentifierTypePAS IdentifierType = "PAS"
+	IdentifierTypeIDC IdentifierType = "IDC"
+	IdentifierTypePNO IdentifierType = "PNO"
 )
 
-// People can be identified by their ETSI Natural Person Semantics Identifier
-// specified in ETSI319412-1. Other way it might be passport number
-// id card number, this depends on country or company internal politics.
+// CountryCode for semantic identifier.
+type CountryCode string
+
+// Available country codes.
 const (
-	// IdentifierTypePAS for identification based on passport number.
-	IdentifierTypePAS = "PAS"
-
-	// IdentifierTypeIDC for identification based on national identity
-	// card number.
-	IdentifierTypeIDC = "IDC"
-
-	// IdentifierPNO for identification based on (national) personal
-	// number (national civic registration number).
-	IdentifierTypePNO = "PNO"
+	CountryEE CountryCode = "EE"
+	CountryLV CountryCode = "LV"
+	CountryLT CountryCode = "LT"
+	CountryKZ CountryCode = "KZ"
 )
 
 // NewSemanticIdentifier creates new semantic identifier as string.
-func NewSemanticIdentifier(typ, country, id string) string {
-	semid := SemanticIdentifier{
-		Type:    typ,
-		Country: country,
-		ID:      id,
-	}
-	return semid.String()
-}
-
-// SemanticIdentifier is identifier to identify document type, country,
-// and civic personal id.
-//
-// From official guide:
-//
-// Objects referenced by etsi/:semantics-identifier are persons identified
-// by their ETSI Natural Person Sematics Identifier specified in
-// ETSI319412-1. See more
-// https://github.com/SK-EID/smart-id-documentation#2322-etsisemantics-identifier
-type SemanticIdentifier struct {
-	Type, Country, ID string
-}
-
-func (sd SemanticIdentifier) String() string {
-	return fmt.Sprintf("%v%v-%v", sd.Type, sd.Country, sd.ID)
+func NewSemanticIdentifier(
+	idType IdentifierType,
+	country CountryCode,
+	idCode string,
+) string {
+	return fmt.Sprintf("etsi/%s%s-%s", idType, country, idCode)
 }
